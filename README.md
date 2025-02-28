@@ -1,6 +1,16 @@
-# from-hf-to-triton-with-trtllm
+# NV Triton Service with Hugging Face LLM using TensorRT-LLM and Docker
+This repository provides a complete example of deploying a Hugging Face large language model (LLM) as an NVIDIA Triton Inference Server service. The setup leverages TensorRT-LLM for optimized model execution and Docker for easy containerized deployment.
 
-An example project that constructs NV Triton service from Huggingface LLM by using TensorRT-LLM and Docker tools.
+## Features:
+- **End-to-End Deployment:** Streamlines the process of integrating Hugging Face LLMs with NVIDIA Triton for efficient inference.
+- **TensorRT-LLM Acceleration:** Utilizes TensorRT-LLM to enhance performance and reduce latency.
+- **Containerized Environment:** Uses Docker to simplify setup and ensure reproducibility.
+- **Scalability & Optimization:** Leverages Triton’s dynamic batching and model management for scalable inference.
+
+## Getting Started
+Follow the step-by-step instructions to build, configure, and deploy your own Triton inference service for Hugging Face models.
+
+📌 Ideal for developers, AI researchers, and engineers looking to optimize LLM inference with NVIDIA’s AI stack.
 
 ## Prerequisites
 
