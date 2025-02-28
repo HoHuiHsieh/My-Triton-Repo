@@ -1,3 +1,5 @@
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/in/HoHuiHsieh-607b70170/)
+
 # NV Triton Service with Hugging Face LLM using TensorRT-LLM and Docker
 This repository provides a complete example of deploying a Hugging Face large language model (LLM) as an NVIDIA Triton Inference Server service. The setup leverages TensorRT-LLM for optimized model execution and Docker for easy containerized deployment.
 
