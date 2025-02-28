@@ -1,28 +1,18 @@
-# from-hf-to-triton-with-trtllm
+#!/bin/bash
+export WORKDIR="$PWD"
 
-An example project that constructs NV Triton service from Huggingface LLM by using TensorRT-LLM and Docker tools.
-
-## Prerequisites
-
-- Docker
-- Git LFS
-- jq (for JSON processing)
-
-## Steps
-
-### 1. Download LLM from Huggingface
-
-```bash
+####################################################################################################
+# Download LLM from Huggingface
+####################################################################################################
 export MODEL_PATH="../models/Llama-3.2-1B"
 
 git lfs install
 git clone https://huggingface.co/meta-llama/Llama-3.2-1B "$MODEL_PATH"
-```
 
-### 2. Get TensorRT-LLM
 
-```bash
-export WORKDIR="$PWD"
+####################################################################################################
+# Get TensorRT-LLM
+####################################################################################################
 export TRTLLM_DIR="3rdparty/TensorRT-LLM"
 export TRTLLM_TAG="v0.17.0"
 
@@ -36,11 +26,11 @@ else
     cd "$WORKDIR/$TRTLLM_DIR"
     git checkout "$TRTLLM_TAG"
 fi
-```
 
-### 3. Get Triton Inference Server
 
-```bash
+####################################################################################################
+# Get Triton Inference Server
+####################################################################################################
 export TRITON_DIR="3rdparty/Triton-trtllm_backend"
 export TRITON_TAG="v0.17.0"
 
@@ -54,11 +44,11 @@ else
     cd "$WORKDIR/$TRITON_DIR"
     git checkout "$TRITON_TAG"
 fi
-```
 
-### 4. Build trtllm engine
 
-```bash
+####################################################################################################
+# Build trtllm engine
+####################################################################################################
 export TRTLLM_EXAMPLE_MODEL_DIR="$TRTLLM_DIR/examples/llama"
 export MODEL_CKPT_PATH="model/ckpt"
 export MODEL_ENGINE_PATH="model/engine"
@@ -76,11 +66,11 @@ docker run -it --rm --gpus all \
     -v $WORKDIR/$BUILDER_SCRIPT:/workspace/build.sh \
     -w /workspace \
     llm/trtllm-builder:$TRTLLM_TAG ./build.sh
-```
 
-### 5. Serve model with Triton Inference Server
 
-```bash
+####################################################################################################
+# Serve model with Triton Inference Server
+####################################################################################################
 export CONTAINER_TAG="self-host-llm/triton-llama3.2-1b:latest"
 export TRITON_REPO_DIR="3rdparty/Triton-trtllm_backend/all_models/inflight_batcher_llm"
 export CONFIG_FILL_SCRIPT="script/fill_template.py"
@@ -101,11 +91,13 @@ docker run -itd --rm --gpus "device=0" \
     -p 8002:8002 \
     -w /workspace \
     $CONTAINER_TAG 
-```
 
-### 6. Test Triton Inference Server
 
-```bash
+####################################################################################################
+# Test Triton Inference Server
+####################################################################################################
+sleep 10
+
 RESPONSE=$(curl -s -w "\nHTTP_STATUS_CODE:%{http_code}\n" -X POST \
     -H "Content-Type: application/json" \
     -d '{
