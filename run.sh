@@ -71,14 +71,14 @@ docker run -it --rm --gpus all \
 ####################################################################################################
 # Serve model with Triton Inference Server
 ####################################################################################################
-export CONTAINER_TAG="self-host-llm/triton-llama3.2-1b:latest"
+export DOCKER_IMAGE_NAME_WITH_TAG="self-host-llm/triton-llama3.2-1b:latest"
 export TRITON_REPO_DIR="3rdparty/Triton-trtllm_backend/all_models/inflight_batcher_llm"
 export CONFIG_FILL_SCRIPT="script/fill_template.py"
 export RUN_SERVE_SCRIPT="script/launch_triton_server.py"
 
 cd $WORKDIR
 docker build --no-cache --target server_container \
-    -t $CONTAINER_TAG \
+    -t $DOCKER_IMAGE_NAME_WITH_TAG \
     --build-arg HOST_REPO_DIR=$TRITON_REPO_DIR \
     --build-arg CONFIG_FILL_SCRIPT=$CONFIG_FILL_SCRIPT \
     --build-arg RUN_SERVE_SCRIPT=$RUN_SERVE_SCRIPT \
@@ -90,7 +90,7 @@ docker run -itd --rm --gpus "device=0" \
     -p 8001:8001 \
     -p 8002:8002 \
     -w /workspace \
-    $CONTAINER_TAG 
+    $DOCKER_IMAGE_NAME_WITH_TAG 
 
 
 ####################################################################################################
