@@ -7,8 +7,7 @@ from .state import AgentState
 @lru_cache(maxsize=4)
 def _get_model(openai_apikey: str = None):
     model = ChatOpenAI(
-        base_url="http://192.168.1.201/v1",
-        model_name="meta/llama-3.1-8b-instruct",
+        model_name="gpt-4o-mini-2024-07-18",
         api_key=openai_apikey,
         max_completion_tokens=1024,
         temperature=0.9,
@@ -19,10 +18,11 @@ def _get_model(openai_apikey: str = None):
 
 
 system_prompt = """
-You are an expert assistant.
-Summarize the conversation so far in clear, concise language.
-Focus on the main points, user requests, and any important context.
-Exclude unnecessary details and keep the summary brief and informative.
+You are an expert assistant. Your task is to answer the user's request based on previous messages in the conversation.
+You should provide a clear and concise response to the user's request.
+Do not include any additional information or context that is not directly related to the user's request.
+Do not include any harmful, unethical, or illegal content in your response.
+If you are unsure about the user's request, ask for clarification.
 """
 
 

@@ -1,21 +1,37 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, BaseMessage
 from .tools import get_docrag_tool
-from ..state import AgentState
-
+from .state import AgentState
 
 system_prompt = """
-You are an expert document retrieval assistant.
+You are an expert document retrieval assistant specializing in semantic search.
 
-Your responsibilities:
-- Understand the user's request and break it down into clear, actionable steps if needed.
-- Use the `document_retriever` tool to perform a semantic search for relevant documents.
-- Carefully analyze the search results and return only the most relevant documents in a clear, structured format (e.g., with title, summary, and source).
-- If no relevant documents are found, politely inform the user and suggest clarifying or refining their request if possible.
-- If the retry count reaches 3 and no relevant documents are found, return an error message indicating the search was unsuccessful and recommend next steps.
-- Only return the content of the documents that are relevant to the user's request, do not include any irrelevant information.
+When searching for documents:
+- Prioritize relevance and accuracy over quantity
+- Extract and use key terms from the user's query
+- Leverage synonyms and related concepts to enhance search coverage
+- Employ both specific and general search strategies as needed
+- Present results in order of relevance with clear organization
+- Explain briefly why each retrieved document matches the query
+- Clarify your understanding of ambiguous search terms
 
-Remember: Your goal is to help the user efficiently find the information they need from the available documents.
+Your tasks:
+1. Analyze the user's request thoroughly
+2. Use the `document_retriever` tool to conduct semantic searches
+3. Present only the most relevant results in a structured format
+4. Inform the user if no matching documents exist and suggest query refinements
+5. After 3 unsuccessful retries, provide an error message with alternative suggestions
+6. Include only relevant document content in your responses
+
+Response guidelines:
+- Be concise and complete
+- Avoid phrases like "Is there anything else you'd like to know?"
+- Don't solicit follow-up questions
+- Provide comprehensive answers that stand on their own
+- Do not guess or fabricate the time or date
+- Response only with the retrieved documents, not with any additional explanations or comments.
+- If no documents are found or insufficient information is available, you should state clearly that you cannot provide an answer based on the current documents.
+
 """
 
 
@@ -30,8 +46,7 @@ def doc_retriever_node(state: AgentState) -> dict:
 
     # Create model for calling the tool
     model = ChatOpenAI(
-        base_url="http://192.168.1.201/v1",
-        model_name="meta/llama-3.1-8b-instruct",
+        model_name="gpt-4o-mini-2024-07-18",
         api_key=api_key,
         # max_completion_tokens=1024,
         temperature=0.9,
@@ -44,7 +59,8 @@ def doc_retriever_node(state: AgentState) -> dict:
                 if not isinstance(msg, SystemMessage)]
 
     # create system message
-    system_msg = SystemMessage(content=system_prompt + f"\n\nCurrent retry count: {state.get('retry_count', 0)}")
+    system_msg = SystemMessage(
+        content=system_prompt + f"\n\nCurrent retry count: {state.get('retry_count', 0)}")
     messages.insert(0, system_msg)
 
     # If the last message is an AIMessage with content, add a user message to improve or execute the code
@@ -59,7 +75,6 @@ def doc_retriever_node(state: AgentState) -> dict:
 
     # Invoke the model with the messages
     res: BaseMessage = model.invoke(messages)
-    print(f"Response from model: {res.content}")
 
     # return state with the response
     state["messages"].append(res)
@@ -68,7 +83,7 @@ def doc_retriever_node(state: AgentState) -> dict:
     return state
 
 
-def should_continue(state:AgentState):
+def should_continue(state: AgentState):
     """
     Function to determine whether to continue or end the workflow based on the last message's tool calls.
     """

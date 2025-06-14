@@ -56,6 +56,7 @@ async def run_graph(input: List[RawMessage], openai_apikey: str, callback: Calla
         {
             "document_retrieval": "document_retrieval",
             "python_coder": "python_coder",
+            "replan": "planer",
             "end": "summarize",
         },
     )

@@ -13,7 +13,7 @@ sys.path.insert(0,
                     )
                 )
 from py_coder import graph
-from py_coder.state import PyCoderState
+from py_coder.state import AgentState
 from langchain_core.messages import HumanMessage, AIMessage
 from utils import set_variables
 
@@ -26,7 +26,7 @@ def run_pycoder_demo():
     api_key = set_variables().get("API_KEY", "OPENAI_APIKEY")
     
     # Create an initial state with an assistant message
-    state = PyCoderState(
+    state = AgentState(
         messages=[
             HumanMessage(content="remember x = 10"),
             AIMessage(content="ok, I will compute the sum of numbers from 1 to x."),

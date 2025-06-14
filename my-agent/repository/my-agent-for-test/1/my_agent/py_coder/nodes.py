@@ -2,7 +2,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage, BaseMessage
 from langgraph.prebuilt import ToolNode
 from .tools import get_pycoder_tool
-from ..state import AgentState
+from .state import AgentState
 
 
 pycoder_tool = get_pycoder_tool()
@@ -12,6 +12,7 @@ system_prompt = """
 You are an expert Python code execution assistant.
 Your primary task is to execute Python code provided by the user and return the result.
 Always use the `python_coder` tool to execute the code.
+Format your response as a JSON object.
 
 Instructions:
 - The code you execute must assign the output to a variable named 'result'. Only the value of 'result' will be returned.
@@ -41,8 +42,7 @@ def pycoder_node(state: AgentState) -> dict:
     """
     # Create model for calling the tool
     model = ChatOpenAI(
-        base_url="http://192.168.1.201/v1",
-        model_name="meta/llama-3.1-8b-instruct",
+        model_name="gpt-4o-mini-2024-07-18",
         api_key=state.get("api_key", ""),
         max_completion_tokens=1024,
         temperature=0.9,
@@ -54,6 +54,7 @@ def pycoder_node(state: AgentState) -> dict:
         [pycoder_tool],
         strict=True
     )
+    # Add JSON response format
     model = model.bind(response_format={"type": "json_object"})
 
     # Prepare the messages for the model
@@ -72,14 +73,19 @@ def pycoder_node(state: AgentState) -> dict:
         if 'Python execution error' in last_content:
             # Ask the user to improve the code to avoid the execution error
             user_msg = HumanMessage(
-                content="Improve the code to avoid the execution error.")
+                content="Improve the code to avoid the execution error. Return the solution as a JSON response.")
         else:
             # Ask the user to execute the Python code
             user_msg = HumanMessage(
-                content="Solve the problem in the last message.")
+                content="Solve the problem in the last message. Format your response as JSON.")
 
         # Add the user message to the messages
         messages.append(user_msg)
+
+    # Add JSON formatting instruction to human message
+    human_message = state.get("messages", [])[-1] if state.get("messages", []) else None
+    if human_message and isinstance(human_message, HumanMessage):
+        human_message.content += " Please format your response as JSON."
 
     # Invoke the model with the messages
     res: BaseMessage = model.invoke(messages)

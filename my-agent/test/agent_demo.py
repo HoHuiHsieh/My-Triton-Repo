@@ -29,7 +29,9 @@ def print_callback(content: str):
 
 # Sample conversation messages
 messages = [
-    {"role": "user", "content": "Find a movie about dinosaurs in document, get current datetime from code, then give me the name and the age of the movie."},
+    # {"role": "user", "content": "Find a movie about psychologist in document, how old is the movie?"},
+    # {"role": "user", "content": "9 + 8 - 7 * 6 / 5 + 4 * 3 - 2 * 1 = ?"},
+    {"role": "user", "content": "How many '.' in s...t.ra..wb.e..r.r.y.?"},
 ]
 
 async def main():

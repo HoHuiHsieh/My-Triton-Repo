@@ -3,7 +3,7 @@ from langgraph.graph.state import CompiledStateGraph
 from langgraph.prebuilt import ToolNode
 from .nodes import doc_retriever_node, should_continue
 from .tools import get_docrag_tool
-from ..state import AgentState
+from .state import AgentState
 
 
 def get_doc_retriever_graph(api_key: str = "") -> CompiledStateGraph:

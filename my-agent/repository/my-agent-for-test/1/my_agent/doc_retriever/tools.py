@@ -9,11 +9,10 @@ from pydantic import BaseModel, Field
 def _get_vectorstore(api_key: str = None):
     """Get a vector store for document retrieval."""
     # Prepare the vector store and embedding
-    connection = "postgresql+psycopg://postgresql:password@192.168.1.201:5432/postgres"
+    connection = "postgresql+psycopg://postgresql:password@postgres:5432/postgres"
     collection = "document_collection"
     embedding = OpenAIEmbeddings(
-        base_url="http://192.168.1.201/v1",
-        model="nv-embed-v2",
+        model="text-embedding-3-small",
         api_key=api_key,
         check_embedding_ctx_length=False,
     )

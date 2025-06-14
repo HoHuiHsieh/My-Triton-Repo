@@ -17,15 +17,30 @@ Next step or action to take based on your reasoning.
 </think>
 ...etc.
 
-If you need to use tools or ask clarifying questions, explain your reasoning in the <think> section first.
-Always be explicit about your assumptions and logic.
-Do not skip steps, and avoid making unsupported leaps in reasoning.
-If you are unsure, state your uncertainty and suggest what information would help.
+You should always use the following 4 tools in your actions:
+1. 'document_retrieval': For retrieving relevant documents or information, including:
+    - Movie reviews
+2. 'python_coder': For executing Python code to perform calculations or data processing, including:
+    - Calculate a mathematical expression
+    - Generate a list of numbers
+    - Perform data analysis
+    - Generate a random number
+    - Process text
+    - Retrieve system clock time
+    - Other Python-related tasks
+3. 'replan': If you need to change your plan based on new information or insights, including:
+    - Adjusting your problem-solving approach
+    - Reassessing your assumptions
+4. 'end': If you have completed the task and no further action is needed, including:
+    - Ending the workflow when the task is complete
+    - Ending the workflow when no further action is required
+    - Ending the workflow when the task or question has been answered or resolved
+    - Ending the workflow when the task or question cannot be answered or resolved
 
-Here are some tools that you can use in your actions:
-- 'document_retrieval': For retrieving relevant documents or information.
-- 'python_coder': For executing Python code to perform calculations or data processing.
+Your response should include the full name of the tool you are invoking, such as 'document_retrieval', 'python_coder', 'replan', or 'end'.
+Explain your reasoning before invoking any tool.
 
+Only reason and plan based on the user's input and previous messages.
 Now, let's start solving the user's problem step by step.
 """
 
@@ -36,8 +51,7 @@ def planer_node(state: AgentState) -> dict:
     """
     # Create model for calling the tool
     model = ChatOpenAI(
-        base_url="http://192.168.1.201/v1",
-        model_name="meta/llama-3.1-8b-instruct",
+        model_name="gpt-4o-mini-2024-07-18",
         api_key=state.get("api_key", ""),
         max_completion_tokens=1024,
         temperature=0.9,
@@ -65,58 +79,31 @@ def planer_node(state: AgentState) -> dict:
     return state
 
 
-guardrail_prompt = """
-The plan you just created:
-```
-{{ plan }}
-```
-
-Based on the plan, you need to decide which tool to use next. Here are your options:
-- If the plan requires retrieving documents or information, use the `document_retrieval` tool.
-- If the plan requires executing Python code, use the `python_coder` tool.
-- If the plan does not require any further action, simply end the workflow.
-
-Please choose one of the following options:
-- `document_retrieval`: Use this tool to retrieve relevant documents or information.
-- `python_coder`: Use this tool to execute Python code for calculations or data processing.
-- `end`: End the workflow if no further action is needed.
-"""
-
-
 def guardrail(state: AgentState):
     """
     Function to determine whether to continue or end the workflow based on the last message's tool calls.
+    
     """
-    # Create model for calling the tool
-    model = ChatOpenAI(
-        base_url="http://192.168.1.201/v1",
-        model_name="meta/llama-3.1-8b-instruct",
-        api_key=state.get("api_key", ""),
-        max_completion_tokens=1024,
-        temperature=0.9,
-        top_p=0.9,
-        n=1,
-        stop_sequences=["</think>"],  # Stop on think tags
-    )
-
-    # Get the last AIMessage from the state
     messages = state.get("messages", [])
     last_message = messages[-1]
-    if isinstance(last_message, AIMessage):
-        # If the last message is an AIMessage with content, use it to create the prompt
-        last_content = last_message.content if hasattr(
-            last_message, 'content') else ""
-        prompt = guardrail_prompt.replace("{{ plan }}", last_content)
+    last_content = last_message.content if hasattr(
+        last_message, 'content') else ""
 
-        # Create a user message with the prompt, which will be used to invoke the model
-        response = model.invoke([HumanMessage(content=prompt)])
-
-        # Route based on the response content
-        response_content = response.content if hasattr(
-            response, 'content') else ""
-        if 'document_retrieval' in response_content:
-            return "document_retrieval"
-        elif 'python_coder' in response_content:
-            return "python_coder"
-        else:
-            return "end"
+    # find index of the tool in the last message
+    tools = ["document_retrieval", "python_coder", "replan", "end"]
+    indexes = [last_content.find(tool) for tool in tools]
+    # sort indexes to find the first tool mentioned
+    first_tool_index = min((index for index in indexes if index != -1), default=-1)
+    if first_tool_index == -1:
+        # If no tool is mentioned, replan the workflow
+        return "replan"
+    # Determine which tool was mentioned first
+    first_tool = tools[indexes.index(first_tool_index)]
+    if first_tool == "document_retrieval":
+        return "document_retrieval"
+    elif first_tool == "python_coder":
+        return "python_coder"
+    elif first_tool == "replan":
+        return "replan"
+    elif first_tool == "end":
+        return "end"

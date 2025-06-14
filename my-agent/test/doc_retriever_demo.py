@@ -13,9 +13,11 @@ sys.path.insert(0,
                     )
                 )
 from doc_retriever import get_doc_retriever_graph
-from doc_retriever.state import DocRetrieverState
+from doc_retriever.state import AgentState
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.documents import Document
+from langchain_postgres import PGVector
+from langchain_openai import OpenAIEmbeddings
 from utils import set_variables
 
 
@@ -23,7 +25,7 @@ api_key = set_variables().get("API_KEY", "OPENAI_APIKEY")
 
 
 # Prepare the vector store and embedding
-connection = "postgresql+psycopg://postgresql:password@192.168.1.201:5432/postgres"
+connection = "postgresql+psycopg://postgresql:password@postgres:5432/postgres"
 collection = "document_collection"
 docs = [
     Document(
@@ -65,19 +67,19 @@ def run_doc_retriever_demo():
     api_key = set_variables().get("API_KEY", "OPENAI_APIKEY")
     
     # Create an initial state with an assistant message
-    state = DocRetrieverState(
+    state = AgentState(
         messages=[
             HumanMessage(content="Find the year, name and director of the most relevant movie to dinosaurs."),
             AIMessage(content="Ok, I will find in document."), 
         ],
         api_key=api_key
     )
+    graph = get_doc_retriever_graph(api_key)
     
     print("Initial state:", state)
     print("\nRunning the doc_retriever graph...\n")
     
     # Execute the graph
-    graph = get_doc_retriever_graph(api_key)
     try:
         final_state = graph.invoke(state)
         print("\nFinal state:")
@@ -90,8 +92,7 @@ def run_doc_retriever_demo():
 
 if __name__ == "__main__":
     # embedding = OpenAIEmbeddings(
-    #     base_url="http://192.168.1.201/v1",
-    #     model="nv-embed-v2",
+    #     model="text-embedding-3-small",
     #     api_key=api_key,
     #     check_embedding_ctx_length=False,
     # )
@@ -105,7 +106,7 @@ if __name__ == "__main__":
     #     use_jsonb=True,
     # )
     # print("Vector store initialized with sample documents.")
-    print("===================")
+    # print("===================")
     print("DocRetriver Module Demo")
     print("===================")
     run_doc_retriever_demo()
