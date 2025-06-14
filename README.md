@@ -40,6 +40,11 @@ By following the examples in this repository, you can set up a production-qualit
 │   ├── repository/              # Configured Triton model repository
 │   ├── script/                  # Utility scripts for setup and deployment
 │   └── src/                     # Python source code for model preparation
+├── my-agent/                    # Multi-functional AI agent implementation
+│   ├── docker/                  # Docker configuration files
+│   ├── repository/              # Triton model repository with agent modules
+│   ├── script/                  # Setup and deployment scripts
+│   └── test/                    # Test and demo scripts
 ├── nv-embed-v2/                 # NVIDIA's Embedding v2 model implementation
 │   ├── model/                   # Model weights directory
 │   ├── repository/              # Triton model repository
@@ -60,6 +65,17 @@ A state-of-the-art open-weights language model from Meta, deployed with TensorRT
 - Optimized for consumer-grade GPUs (RTX series)
 
 [➡️ Llama 3.1 Deployment Guide](meta-llama-3.1-8B-Instruct/README.md)
+
+### My-Agent
+
+A modular AI agent built with LangChain and LangGraph frameworks:
+- Document retrieval module for accessing and searching knowledge bases
+- Python code generation capabilities for creating and executing code
+- Planning module for decomposing complex tasks
+- Integration with PostgreSQL for vector storage
+- Containerized deployment with Docker and Docker Compose
+
+[➡️ My-Agent Deployment Guide](my-agent/README.md)
 
 ### NVIDIA/NV-Embed-v2
 
@@ -102,10 +118,13 @@ These models can be deployed with [My-OpenAI-Frontend](https://github.com/HoHuiH
 - **GPU Memory**: 
   - Llama 3.1 8B: Minimum 16GB VRAM (24GB+ recommended)
   - NV-Embed-v2: Minimum 8GB VRAM
+  - My-Agent: CPU execution with optional GPU acceleration
 - **Storage**: At least 50GB free disk space for model weights and engines
 - **Software**: 
   - Docker with NVIDIA Container Toolkit
   - NVIDIA drivers version 575 or later
+  - Docker Compose for My-Agent
+  - Internet connection for My-Agent's OpenAI API access
 
 ## License
 
