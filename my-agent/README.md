@@ -4,7 +4,6 @@ This repository contains all necessary components to deploy and serve a multi-fu
 
 [![NVIDIA Triton](https://img.shields.io/badge/NVIDIA-Triton_Inference_Server-76B900?style=flat-square&logo=nvidia)](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
 [![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![LangChain](https://img.shields.io/badge/LangChain-Framework-25A162?style=flat-square)](https://python.langchain.com/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Framework-3693F3?style=flat-square)](https://python.langchain.com/docs/langgraph)
 

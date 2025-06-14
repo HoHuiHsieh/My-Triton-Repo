@@ -7,6 +7,9 @@ This repository provides examples of deploying AI models using NVIDIA Triton Inf
 [![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
 [![Llama 3.1](https://img.shields.io/badge/Meta-Llama_3.1-0467DF?style=flat-square&logo=meta)](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
 [![NVIDIA Embed](https://img.shields.io/badge/NVIDIA-NV--Embed--v2-76B900?style=flat-square&logo=nvidia)](https://huggingface.co/nvidia/NV-Embed-v2)
+[![LangChain](https://img.shields.io/badge/LangChain-Framework-25A162?style=flat-square)](https://python.langchain.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Framework-3693F3?style=flat-square)](https://python.langchain.com/docs/langgraph)
+
 
 ## Table of Contents
 
