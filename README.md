@@ -114,3 +114,7 @@ The models themselves may have their own licenses - please refer to the original
 
 - [Meta Llama 3.1 License](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
 - [NVIDIA NV-Embed-v2 License](https://huggingface.co/nvidia/NV-Embed-v2)
+
+## Contact
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/in/hohuihsieh)
