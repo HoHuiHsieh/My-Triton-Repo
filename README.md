@@ -1,153 +1,116 @@
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue)](https://www.linkedin.com/in/HoHuiHsieh-607b70170/)
+# My-Triton-Repo
 
-# NV Triton Service with Hugging Face LLM using TensorRT-LLM and Docker
-This repository provides a complete example of deploying a Hugging Face large language model (LLM) as an NVIDIA Triton Inference Server service. The setup leverages TensorRT-LLM for optimized model execution and Docker for easy containerized deployment.
+This repository provides examples of deploying AI models using NVIDIA Triton Inference Server for home and small-scale deployments. The setup leverages TensorRT-LLM for Large Language Models (LLMs) and PyTorch for embedding models, all packaged with Docker for easy containerized deployment.
 
-## Features:
-- **End-to-End Deployment:** Streamlines the process of integrating Hugging Face LLMs with NVIDIA Triton for efficient inference.
-- **TensorRT-LLM Acceleration:** Utilizes TensorRT-LLM to enhance performance and reduce latency.
-- **Containerized Environment:** Uses Docker to simplify setup and ensure reproducibility.
-- **Scalability & Optimization:** Leverages Triton’s dynamic batching and model management for scalable inference.
+[![NVIDIA Triton](https://img.shields.io/badge/NVIDIA-Triton_Inference_Server-76B900?style=flat-square&logo=nvidia)](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver)
+[![TensorRT LLM](https://img.shields.io/badge/NVIDIA-TensorRT--LLM-76B900?style=flat-square&logo=nvidia)](https://github.com/NVIDIA/TensorRT-LLM)
+[![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=flat-square&logo=docker)](https://www.docker.com/)
+[![Llama 3.1](https://img.shields.io/badge/Meta-Llama_3.1-0467DF?style=flat-square&logo=meta)](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
+[![NVIDIA Embed](https://img.shields.io/badge/NVIDIA-NV--Embed--v2-76B900?style=flat-square&logo=nvidia)](https://huggingface.co/nvidia/NV-Embed-v2)
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Repository Structure](#repository-structure)
+- [Available Models](#available-models)
+- [Getting Started](#getting-started)
+- [Frontend Integration](#frontend-integration)
+- [System Requirements](#system-requirements)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+This project demonstrates how to efficiently deploy and serve AI models using NVIDIA's Triton Inference Server. The repository includes complete deployment configurations for:
+
+- State-of-the-art Large Language Models (LLMs) with TensorRT-LLM acceleration
+- Embedding models for vector search and semantic analysis
+- Optimized inference pipelines with preprocessing and postprocessing
+
+By following the examples in this repository, you can set up a production-quality AI inference system on your own hardware, with performance optimizations like quantization and batching to maximize throughput.
+
+## Repository Structure
+
+```
+├── meta-llama-3.1-8B-Instruct/  # Meta's Llama 3.1 8B LLM implementation
+│   ├── checkpoint/              # Converted model checkpoints 
+│   ├── engine/                  # TensorRT-LLM engine files
+│   ├── model/                   # Original model weights
+│   ├── raw-repository/          # Triton model template files
+│   ├── repository/              # Configured Triton model repository
+│   ├── script/                  # Utility scripts for setup and deployment
+│   └── src/                     # Python source code for model preparation
+├── nv-embed-v2/                 # NVIDIA's Embedding v2 model implementation
+│   ├── model/                   # Model weights directory
+│   ├── repository/              # Triton model repository
+│   └── script/                  # Setup and deployment scripts
+├── LICENSE                      # License file for the repository
+└── README.md                    # This readme file
+```
+
+## Available Models
+
+This repository currently includes the following models:
+
+### Meta/Llama-3.1-8B-Instruct
+
+A state-of-the-art open-weights language model from Meta, deployed with TensorRT-LLM optimization:
+- FP8 quantized for efficient inference
+- Complete Triton pipeline with preprocessing, inference, and postprocessing
+- Optimized for consumer-grade GPUs (RTX series)
+
+[➡️ Llama 3.1 Deployment Guide](meta-llama-3.1-8B-Instruct/README.md)
+
+### NVIDIA/NV-Embed-v2
+
+NVIDIA's embedding model for generating text representations:
+- 768-dimensional embeddings suitable for vector databases
+- PyTorch-based inference backend
+- Optimized for semantic search and text similarity
+
+[➡️ NV-Embed Deployment Guide](nv-embed-v2/README.md)
 
 ## Getting Started
-Follow the step-by-step instructions to build, configure, and deploy your own Triton inference service for Hugging Face models.
 
-📌 Ideal for developers, AI researchers, and engineers looking to optimize LLM inference with NVIDIA’s AI stack.
+To get started with any model in this repository:
 
-## Prerequisites
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/HoHuiHsieh/My-Triton-Repo.git
+   cd My-Triton-Repo
+   ```
 
-- Docker
-- Git LFS
-- jq (for JSON processing)
+2. Navigate to the model directory you want to deploy:
+   ```bash
+   cd meta-llama-3.1-8B-Instruct  # or nv-embed-v2
+   ```
 
-## Steps
+3. Follow the model-specific README instructions for downloading, setting up, and deploying the model.
 
-### 1. Download LLM from Huggingface
+## Frontend Integration
 
-```bash
-export MODEL_PATH="../models/Llama-3.2-1B"
+These models can be deployed with [My-OpenAI-Frontend](https://github.com/HoHuiHsieh/My-OpenAI-Frontend.git), which provides an OpenAI-compatible API interface. This allows you to:
 
-git lfs install
-git clone https://huggingface.co/meta-llama/Llama-3.2-1B "$MODEL_PATH"
-```
+- Use standard OpenAI API clients with your local deployment
+- Build applications with a familiar API structure
+- Integrate with existing tools that support OpenAI's API format
 
-### 2. Get TensorRT-LLM
+## System Requirements
 
-```bash
-export WORKDIR="$PWD"
-export TRTLLM_DIR="3rdparty/TensorRT-LLM"
-export TRTLLM_TAG="v0.17.0"
+- **GPU**: NVIDIA GPU with compute capability 8.0+ for LLMs (RTX 3000 series or newer), 7.0+ for embedding models
+- **RAM**: Minimum 16GB system RAM, 24GB+ recommended
+- **GPU Memory**: 
+  - Llama 3.1 8B: Minimum 16GB VRAM (24GB+ recommended)
+  - NV-Embed-v2: Minimum 8GB VRAM
+- **Storage**: At least 50GB free disk space for model weights and engines
+- **Software**: 
+  - Docker with NVIDIA Container Toolkit
+  - NVIDIA drivers version 575 or later
 
-if [ -d "$WORKDIR/$TRTLLM_DIR" ]; then
-    echo "$TRTLLM_DIR does exist."
-    cd "$WORKDIR/$TRTLLM_DIR"
-    git fetch
-    git checkout "$TRTLLM_TAG"
-else
-    git clone https://github.com/NVIDIA/TensorRT-LLM.git "$TRTLLM_DIR"
-    cd "$WORKDIR/$TRTLLM_DIR"
-    git checkout "$TRTLLM_TAG"
-fi
-```
+## License
 
-### 3. Get Triton Inference Server
+This repository is provided under the GPL-3.0. 
+The models themselves may have their own licenses - please refer to the original model sources for details:
 
-```bash
-export TRITON_DIR="3rdparty/Triton-trtllm_backend"
-export TRITON_TAG="v0.17.0"
-
-if [ -d "$WORKDIR/$TRITON_DIR" ]; then
-    echo "$TRITON_DIR does exist."
-    cd "$WORKDIR/$TRITON_DIR"
-    git fetch
-    git checkout "$TRITON_TAG"
-else
-    git clone https://github.com/triton-inference-server/tensorrtllm_backend.git "$TRITON_DIR"
-    cd "$WORKDIR/$TRITON_DIR"
-    git checkout "$TRITON_TAG"
-fi
-```
-
-### 4. Build trtllm engine
-
-```bash
-export TRTLLM_EXAMPLE_MODEL_DIR="$TRTLLM_DIR/examples/llama"
-export MODEL_CKPT_PATH="model/ckpt"
-export MODEL_ENGINE_PATH="model/engine"
-export BUILDER_SCRIPT="script/build-llama-trtllm.sh"
-
-cd $WORKDIR
-docker build --target builder_container \
-    -t llm/trtllm-builder:$TRTLLM_TAG \
-    --build-arg HOST_TRTLLM_DIR=$TRTLLM_EXAMPLE_MODEL_DIR \
-    .
-docker run -it --rm --gpus all \
-    -v $WORKDIR/$MODEL_PATH:/workspace/model \
-    -v $WORKDIR/$MODEL_CKPT_PATH:/workspace/ckpt \
-    -v $WORKDIR/$MODEL_ENGINE_PATH:/workspace/engine \
-    -v $WORKDIR/$BUILDER_SCRIPT:/workspace/build.sh \
-    -w /workspace \
-    llm/trtllm-builder:$TRTLLM_TAG ./build.sh
-```
-
-### 5. Serve model with Triton Inference Server
-
-```bash
-export DOCKER_IMAGE_NAME_WITH_TAG="self-host-llm/triton-llama3.2-1b:latest"
-export TRITON_REPO_DIR="3rdparty/Triton-trtllm_backend/all_models/inflight_batcher_llm"
-export CONFIG_FILL_SCRIPT="script/fill_template.py"
-export RUN_SERVE_SCRIPT="script/launch_triton_server.py"
-
-cd $WORKDIR
-docker build --no-cache --target server_container \
-    -t $DOCKER_IMAGE_NAME_WITH_TAG \
-    --build-arg HOST_REPO_DIR=$TRITON_REPO_DIR \
-    --build-arg CONFIG_FILL_SCRIPT=$CONFIG_FILL_SCRIPT \
-    --build-arg RUN_SERVE_SCRIPT=$RUN_SERVE_SCRIPT \
-    .
-docker run -itd --rm --gpus "device=0" \
-    -v $WORKDIR/$MODEL_ENGINE_PATH:/workspace/engine \
-    -v $WORKDIR/$MODEL_PATH:/workspace/tokenizor \
-    -p 8000:8000 \
-    -p 8001:8001 \
-    -p 8002:8002 \
-    -w /workspace \
-    $DOCKER_IMAGE_NAME_WITH_TAG 
-```
-
-### 6. Test Triton Inference Server
-
-```bash
-RESPONSE=$(curl -s -w "\nHTTP_STATUS_CODE:%{http_code}\n" -X POST \
-    -H "Content-Type: application/json" \
-    -d '{
-        "id":"0",
-        "inputs":[
-            {
-                "name":"text_input",
-                "shape":[1,1],
-                "datatype":"BYTES",
-                "parameters":{},
-                "data":[["Who are you?"]]
-            },
-            {
-                "name":"max_tokens",
-                "shape":[1,1],
-                "datatype":"INT32",
-                "parameters":{},
-                "data":[[128]]
-            }
-        ]
-    }' \
-    http://localhost:8000/v2/models/ensemble/infer)
-
-HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS_CODE" | awk -F: '{print $2}')
-BODY=$(echo "$RESPONSE" | sed '/HTTP_STATUS_CODE/d')
-
-if [ "$HTTP_STATUS" -eq 200 ]; then
-    echo "Request was successful. Response:"
-    echo "$BODY" | jq
-else
-    echo "Request failed with status code $HTTP_STATUS. Response:"
-    echo "$BODY"
-fi
+- [Meta Llama 3.1 License](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)
+- [NVIDIA NV-Embed-v2 License](https://huggingface.co/nvidia/NV-Embed-v2)
