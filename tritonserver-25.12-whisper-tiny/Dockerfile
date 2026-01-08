@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/tritonserver:25.11-pyt-python-py3
+FROM nvcr.io/nvidia/tritonserver:25.12-pyt-python-py3
 RUN apt-get update && apt-get install -y ffmpeg
 RUN pip install --upgrade \
         transformers \
@@ -8,4 +8,5 @@ RUN pip install --upgrade \
 RUN pip install --upgrade \
         librosa \
         soundfile \
-        jiwer
+        jiwer \
+        OpenCC

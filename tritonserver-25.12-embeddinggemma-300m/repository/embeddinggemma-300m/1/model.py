@@ -32,6 +32,11 @@ class TritonPythonModel:
         model_device = model_config["parameters"]["device"]["string_value"]
        
         # Load model with tokenizer on specified device
+        # Check device availability
+        if model_device.lower() == "cuda" and not torch.cuda.is_available():
+            print(f"CUDA requested but not available. Falling back to CPU.")
+            model_device = "cpu"
+        
         print(f"Initializing EmbeddingGemma model on device: {model_device}")
         self.model = SentenceTransformer(model_path, device=model_device)
         

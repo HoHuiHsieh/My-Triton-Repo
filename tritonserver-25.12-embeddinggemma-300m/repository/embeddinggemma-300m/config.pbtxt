@@ -31,7 +31,7 @@ parameters {
 parameters {
     key: "device"
     value: {
-        string_value: "cuda:0"
+        string_value: "cpu"
     }
 }
 
